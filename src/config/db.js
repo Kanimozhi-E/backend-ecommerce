@@ -9,12 +9,18 @@ try {
 }
 
 const connectDB = async () => {
-  const atlasUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+  let atlasUri = process.env.MONGODB_URI || process.env.MONGO_URI;
   const localUri = 'mongodb://localhost:27017/ecommerce-db';
 
   if (atlasUri) {
+    if (atlasUri.includes('/taskflow')) {
+      atlasUri = atlasUri.replace('/taskflow', '/ecommerce-db');
+    }
     try {
-      const conn = await mongoose.connect(atlasUri, { serverSelectionTimeoutMS: 4000 });
+      const conn = await mongoose.connect(atlasUri, {
+        dbName: 'ecommerce-db',
+        serverSelectionTimeoutMS: 4000
+      });
       console.log(`✅ [MongoDB Atlas] Connected successfully to Cloud Host: ${conn.connection.host} (Database: ${conn.connection.name})`);
       return conn;
     } catch (error) {
